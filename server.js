@@ -1,42 +1,48 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+require("dotenv").config(); // 1. Carrega as variáveis do .env
 
-// Importação das suas rotas (Verifique se os arquivos existem nestes caminhos)
+// Importação das rotas
 const rotaProdutos = require("./routes/produtos");
 const rotaClientes = require("./routes/clientes");
 const rotaPedidos = require("./routes/pedidos");
 
 const app = express();
-const PORT = 3001;
+
+// 2. Ajuste de Porta (essencial para Vercel/Azure/Render)
+const PORT = process.env.PORT || 3001;
 
 // --- MIDDLEWARES ---
 app.use(cors());
 app.use(express.json());
 
-// --- ROTAS DA API (Devem vir ANTES dos arquivos estáticos) ---
-// Se o navegador pedir /api/produtos, o Express entra aqui primeiro.
+// --- ROTAS DA API ---
 app.use("/api/produtos", rotaProdutos);
 app.use("/api/clientes", rotaClientes);
 app.use("/api/pedidos", rotaPedidos);
 
-// --- ARQUIVOS ESTÁTICOS (Frontend) ---
-// Isso serve o seu index.html, css/style.css e js/app.js
+// --- ARQUIVOS ESTÁTICOS ---
 app.use(express.static(path.join(__dirname, "public")));
 
-// Rota curinga para SPA (Single Page Application)
-// Se o usuário digitar uma rota que não existe, ele volta para o index.html
+// Rota curinga para SPA
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // --- INICIALIZAÇÃO DO SERVIDOR ---
-app.listen(PORT, () => {
-  console.log(`
-    🌸 FLORICULTURA FLORA BELLA 🌸
-    --------------------------------------------
-     Servidor rodando em: http://localhost:${PORT}
-     Aguardando conexões com Azure...
-    --------------------------------------------
-    `);
-});
+// Apenas inicia o listen se não estiver em ambiente de teste ou serverless específico
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    console.log(`
+        🌸 FLORICULTURA FLORA BELLA 🌸
+        --------------------------------------------
+        Servidor rodando na porta: ${PORT}
+        Aguardando conexões com Azure...
+        --------------------------------------------
+        `);
+  });
+}
+
+// 3. EXPORTAÇÃO (Obrigatório para o Vercel funcionar)
+module.exports = app;

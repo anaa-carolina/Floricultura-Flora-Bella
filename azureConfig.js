@@ -1,27 +1,37 @@
-// Carrega as configurações do arquivo .env para o process.env
+// 1. Importa as bibliotecas necessárias do Azure
+const { TableClient } = require("@azure/data-tables");
+const { BlobServiceClient } = require("@azure/storage-blob");
 require("dotenv").config();
 
-// Obtém a string de conexão das variáveis de ambiente
+// 2. Obtém a string de conexão das variáveis de ambiente (Vercel ou .env local)
 const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
 
-// Validação de segurança para ajudar no debug
+// Validação de segurança para o seu Terminal
 if (!connectionString) {
-  console.error("---------------------------------------------------------");
-  console.error("❌ ERRO CRÍTICO: String de conexão do Azure não encontrada!");
-  console.error("Verifique se o arquivo .env existe e contém a chave:");
-  console.error("AZURE_STORAGE_CONNECTION_STRING='sua_chave_aqui'");
-  console.error("---------------------------------------------------------");
+  console.error("❌ ERRO: AZURE_STORAGE_CONNECTION_STRING não configurada!");
 }
 
+// 3. Configura o cliente de Blobs (para as fotos das flores)
+const blobServiceClient =
+  BlobServiceClient.fromConnectionString(connectionString);
+
+// 4. Função auxiliar para conectar com as Tabelas (Produtos, Clientes, Pedidos)
+function getTableClient(tableName) {
+  return TableClient.fromConnectionString(connectionString, tableName);
+}
+
+// 5. Exporta tudo o que o seu Backend (server.js e rotas) precisa
 module.exports = {
   connectionString,
-  // Exportamos também os nomes das tabelas para centralizar a configuração
+  blobServiceClient,
+  getTableClient,
+  // Nomes centralizados das tabelas (opcional, mas ajuda na organização)
   tables: {
-    produtos: "Produtos",
-    clientes: "Clientes",
-    pedidos: "Pedidos",
+    produtos: "ProdutosAnaCarolina",
+    clientes: "ClientesAnaCarolina",
+    pedidos: "PedidosAnaCarolina",
   },
   containers: {
-    imagens: "produtos-imagens",
+    fotos: "anacarolina-fotos",
   },
 };
