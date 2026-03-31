@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flora Bella — Floricultura</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar" id="navbar">
+      <div class="nav-brand">
+        <span class="brand-icon">✿</span>
+        <span class="brand-name">Flora Bella</span>
+      </div>
+      <div class="nav-links">
+        <a href="#" class="nav-link active" data-page="loja">Loja</a>
+        <a href="#" class="nav-link" data-page="admin-produtos">Produtos</a>
+        <a href="#" class="nav-link" data-page="admin-clientes">Clientes</a>
+        <a href="#" class="nav-link" data-page="admin-pedidos">Pedidos</a>
+      </div>
+      <div class="nav-actions">
+        <button class="cart-btn" id="cartBtn">
+          <span class="cart-icon">🛒</span>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+        <button class="btn-area-cliente" id="areaClienteBtn">
+          Minha Conta
+        </button>
+      </div>
+    </nav>
+
+    <!-- PAGES -->
+    <div id="app">
+      <!-- LOJA PAGE -->
+      <div id="page-loja" class="page active">
+        <section class="hero">
+          <div class="hero-content">
+            <p class="hero-tag">Natureza em cada detalhe</p>
+            <h1 class="hero-title">
+              Flores que <em>falam</em><br />ao coração
+            </h1>
+            <p class="hero-sub">
+              Arranjos frescos, entregues com amor e cuidado
+            </p>
+            <button class="btn-primary" onclick="scrollToShop()">
+              Explorar Coleção
+            </button>
+          </div>
+          <div class="hero-visual">
+            <div class="hero-circle">
+              <div class="petal p1">✿</div>
+              <div class="petal p2">❀</div>
+              <div class="petal p3">✾</div>
+              <div class="petal p4">❁</div>
+              <div class="petal p5">✿</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="shop-section" id="shopSection">
+          <div class="section-header">
+            <h2>Nossa Coleção</h2>
+            <div class="filters">
+              <input
+                type="text"
+                id="filtroNome"
+                placeholder="Buscar flor..."
+                class="filter-input"
+                oninput="filtrarProdutos()"
+              />
+              <input
+                type="text"
+                id="filtroMarca"
+                placeholder="Marca..."
+                class="filter-input"
+                oninput="filtrarProdutos()"
+              />
+              <input
+                type="number"
+                id="filtroMin"
+                placeholder="R$ Min"
+                class="filter-input small"
+                oninput="filtrarProdutos()"
+              />
+              <input
+                type="number"
+                id="filtroMax"
+                placeholder="R$ Max"
+                class="filter-input small"
+                oninput="filtrarProdutos()"
+              />
+            </div>
+          </div>
+          <div class="products-grid" id="productsGrid">
+            <div class="loading-state">
+              <div class="spinner"></div>
+              <p>Carregando flores...</p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ADMIN PRODUTOS PAGE -->
+      <div id="page-admin-produtos" class="page">
+        <div class="admin-layout">
+          <div class="admin-header">
+            <h2>Gerenciar Produtos</h2>
+            <button class="btn-primary" onclick="openModal('modal-produto')">
+              + Novo Produto
+            </button>
+          </div>
+          <div class="admin-filters">
+            <input
+              type="text"
+              id="adminFiltroNome"
+              placeholder="🔍 Buscar produto..."
+              class="filter-input"
+              oninput="carregarProdutosAdmin()"
+            />
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table" id="tabelaProdutos">
+              <thead>
+                <tr>
+                  <th>Foto</th>
+                  <th>Nome</th>
+                  <th>Marca</th>
+                  <th>Categoria</th>
+                  <th>Preço</th>
+                  <th>Estoque</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyProdutos"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN CLIENTES PAGE -->
+      <div id="page-admin-clientes" class="page">
+        <div class="admin-layout">
+          <div class="admin-header">
+            <h2>Gerenciar Clientes</h2>
+            <button class="btn-primary" onclick="openModal('modal-cliente')">
+              + Novo Cliente
+            </button>
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Email</th>
+                  <th>Telefone</th>
+                  <th>Cidade</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyClientes"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN PEDIDOS PAGE -->
+      <div id="page-admin-pedidos" class="page">
+        <div class="admin-layout">
+          <div class="admin-header">
+            <h2>Pedidos</h2>
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Cliente ID</th>
+                  <th>Total</th>
+                  <th>Pagamento</th>
+                  <th>Entrega</th>
+                  <th>Status</th>
+                  <th>Data</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyPedidos"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CART SIDEBAR -->
+    <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+      <div class="cart-header">
+        <h3>Seu Carrinho</h3>
+        <button class="close-btn" onclick="closeCart()">✕</button>
+      </div>
+      <div class="cart-items" id="cartItems"></div>
+      <div class="cart-footer">
+        <div class="cart-total">
+          <span>Total</span>
+          <span id="cartTotal">R$ 0,00</span>
+        </div>
+        <button class="btn-primary full-width" onclick="openCheckout()">
+          Finalizar Compra
+        </button>
+      </div>
+    </div>
+
+    <!-- MODALS -->
+
+    <!-- Modal Produto -->
+    <div class="modal-overlay" id="modal-produto">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="modalProdutoTitle">Novo Produto</h3>
+          <button class="close-btn" onclick="closeModal('modal-produto')">
+            ✕
+          </button>
+        </div>
+        <form id="formProduto" enctype="multipart/form-data">
+          <input type="hidden" id="produtoId" />
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nome *</label>
+              <input type="text" id="produtoNome" required />
+            </div>
+            <div class="form-group">
+              <label>Marca</label>
+              <input type="text" id="produtoMarca" />
+            </div>
+            <div class="form-group">
+              <label>Modelo</label>
+              <input type="text" id="produtoModelo" />
+            </div>
+            <div class="form-group">
+              <label>Categoria</label>
+              <select id="produtoCategoria">
+                <option value="Buquê">Buquê</option>
+                <option value="Arranjo">Arranjo</option>
+                <option value="Planta">Planta</option>
+                <option value="Vaso">Vaso</option>
+                <option value="Coroa">Coroa</option>
+                <option value="Outro">Outro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Preço (R$) *</label>
+              <input
+                type="number"
+                id="produtoPreco"
+                step="0.01"
+                min="0"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label>Quantidade *</label>
+              <input type="number" id="produtoQtd" min="0" required />
+            </div>
+          </div>
+          <div class="form-group full">
+            <label>Descrição</label>
+            <textarea id="produtoDesc" rows="3"></textarea>
+          </div>
+          <div class="form-group full">
+            <label>Foto do Produto</label>
+            <div class="upload-area" id="uploadArea">
+              <input
+                type="file"
+                id="produtoFoto"
+                accept="image/*"
+                onchange="previewImage(this)"
+              />
+              <div class="upload-placeholder" id="uploadPlaceholder">
+                <span class="upload-icon">📷</span>
+                <p>Clique ou arraste uma imagem</p>
+              </div>
+              <img
+                id="fotoPreview"
+                style="display: none; max-height: 150px; border-radius: 8px"
+              />
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn-secondary"
+              onclick="closeModal('modal-produto')"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primary">Salvar Produto</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Cliente -->
+    <div class="modal-overlay" id="modal-cliente">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="modalClienteTitle">Novo Cliente</h3>
+          <button class="close-btn" onclick="closeModal('modal-cliente')">
+            ✕
+          </button>
+        </div>
+        <form id="formCliente">
+          <input type="hidden" id="clienteId" />
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nome *</label>
+              <input type="text" id="clienteNome" required />
+            </div>
+            <div class="form-group">
+              <label>Email *</label>
+              <input type="email" id="clienteEmail" required />
+            </div>
+            <div class="form-group">
+              <label>Telefone</label>
+              <input type="text" id="clienteTelefone" />
+            </div>
+            <div class="form-group">
+              <label>CPF</label>
+              <input type="text" id="clienteCpf" />
+            </div>
+            <div class="form-group full">
+              <label>Endereço</label>
+              <input type="text" id="clienteEndereco" />
+            </div>
+            <div class="form-group">
+              <label>Cidade</label>
+              <input type="text" id="clienteCidade" />
+            </div>
+            <div class="form-group">
+              <label>Estado</label>
+              <input type="text" id="clienteEstado" maxlength="2" />
+            </div>
+            <div class="form-group">
+              <label>CEP</label>
+              <input type="text" id="clienteCep" />
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn-secondary"
+              onclick="closeModal('modal-cliente')"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primary">Salvar Cliente</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Checkout -->
+    <div class="modal-overlay" id="modal-checkout">
+      <div class="modal modal-lg">
+        <div class="modal-header">
+          <h3>Finalizar Pedido</h3>
+          <button class="close-btn" onclick="closeModal('modal-checkout')">
+            ✕
+          </button>
+        </div>
+        <div class="checkout-layout">
+          <div class="checkout-left">
+            <h4>Identificação</h4>
+            <div class="form-group">
+              <label>Email do Cliente</label>
+              <div style="display: flex; gap: 8px">
+                <input
+                  type="email"
+                  id="checkoutEmail"
+                  placeholder="seu@email.com"
+                  style="flex: 1"
+                />
+                <button class="btn-secondary" onclick="buscarClienteCheckout()">
+                  Buscar
+                </button>
+              </div>
+            </div>
+            <div
+              id="clienteInfo"
+              class="cliente-info-box"
+              style="display: none"
+            ></div>
+            <p class="checkout-or">ou</p>
+            <button
+              class="btn-secondary full-width"
+              onclick="
+                openModal('modal-cliente');
+                closeModal('modal-checkout');
+              "
+            >
+              Cadastrar novo cliente
+            </button>
+
+            <h4 style="margin-top: 24px">Entrega</h4>
+            <div class="entrega-opts">
+              <label class="radio-card">
+                <input type="radio" name="entrega" value="entrega" checked />
+                <div>
+                  <strong>🚚 Entrega</strong>
+                  <p>Receba em casa</p>
+                </div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="entrega" value="retirada" />
+                <div>
+                  <strong>🏪 Retirada</strong>
+                  <p>Na nossa loja</p>
+                </div>
+              </label>
+            </div>
+            <div id="enderecoEntregaField" class="form-group">
+              <label>Endereço de entrega</label>
+              <input
+                type="text"
+                id="enderecoEntrega"
+                placeholder="Rua, número, bairro..."
+              />
+            </div>
+
+            <h4 style="margin-top: 24px">Pagamento</h4>
+            <div class="pagamento-opts">
+              <label class="radio-card">
+                <input type="radio" name="pagamento" value="cartao" checked />
+                <div><strong>💳 Cartão</strong></div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="pagamento" value="pix" />
+                <div><strong>⚡ PIX</strong></div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="pagamento" value="dinheiro" />
+                <div><strong>💵 Dinheiro</strong></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="checkout-right">
+            <h4>Resumo do Pedido</h4>
+            <div id="checkoutItems"></div>
+            <div class="checkout-total">
+              <span>Total</span>
+              <span id="checkoutTotal">R$ 0,00</span>
+            </div>
+            <button
+              class="btn-primary full-width"
+              onclick="confirmarPedido()"
+              style="margin-top: 16px"
+            >
+              Confirmar Pedido
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Área Cliente -->
+    <div class="modal-overlay" id="modal-area-cliente">
+      <div class="modal modal-lg">
+        <div class="modal-header">
+          <h3>Minha Conta</h3>
+          <button class="close-btn" onclick="closeModal('modal-area-cliente')">
+            ✕
+          </button>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <div style="display: flex; gap: 8px">
+            <input
+              type="email"
+              id="areaClienteEmail"
+              placeholder="seu@email.com"
+              style="flex: 1"
+            />
+            <button class="btn-primary" onclick="buscarAreaCliente()">
+              Entrar
+            </button>
+          </div>
+        </div>
+        <div id="areaClienteData" style="display: none">
+          <div class="tabs">
+            <button class="tab active" onclick="showTab('tab-dados')">
+              Meus Dados
+            </button>
+            <button class="tab" onclick="showTab('tab-pedidos-cliente')">
+              Meus Pedidos
+            </button>
+          </div>
+          <div id="tab-dados" class="tab-content">
+            <form id="formEditarCliente">
+              <input type="hidden" id="areaClienteId" />
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Nome</label><input type="text" id="acNome" />
+                </div>
+                <div class="form-group">
+                  <label>Email</label><input type="email" id="acEmail" />
+                </div>
+                <div class="form-group">
+                  <label>Telefone</label><input type="text" id="acTelefone" />
+                </div>
+                <div class="form-group">
+                  <label>CPF</label><input type="text" id="acCpf" />
+                </div>
+                <div class="form-group full">
+                  <label>Endereço</label><input type="text" id="acEndereco" />
+                </div>
+                <div class="form-group">
+                  <label>Cidade</label><input type="text" id="acCidade" />
+                </div>
+                <div class="form-group">
+                  <label>Estado</label><input type="text" id="acEstado" />
+                </div>
+              </div>
+              <button type="submit" class="btn-primary">
+                Salvar alterações
+              </button>
+            </form>
+          </div>
+          <div
+            id="tab-pedidos-cliente"
+            class="tab-content"
+            style="display: none"
+          >
+            <div id="pedidosCliente"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>
